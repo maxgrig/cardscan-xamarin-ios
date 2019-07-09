@@ -1,0 +1,10 @@
+framework module CardScan {
+  umbrella header "CardScan-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module CardScan.__Swift {
+    exclude header "CardScan-Swift.h"
+}

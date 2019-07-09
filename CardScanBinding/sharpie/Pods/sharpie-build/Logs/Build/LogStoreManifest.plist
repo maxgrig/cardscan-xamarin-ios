@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>10</integer>
+	<key>logs</key>
+	<dict>
+		<key>1DC6973D-938C-40B6-9A42-38828A69CDB5</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>1DC6973D-938C-40B6-9A42-38828A69CDB5.xcactivitylog</string>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>Pods project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>Pods-ObjectiveSharpieIntegration</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>0</integer>
+			<key>signature</key>
+			<string>Building project Pods with scheme Pods-ObjectiveSharpieIntegration and configuration Release</string>
+			<key>timeStartedRecording</key>
+			<real>584358734.37313998</real>
+			<key>timeStoppedRecording</key>
+			<real>584358751.04414701</real>
+			<key>title</key>
+			<string>Building project Pods with scheme Pods-ObjectiveSharpieIntegration and configuration Release</string>
+			<key>uniqueIdentifier</key>
+			<string>1DC6973D-938C-40B6-9A42-38828A69CDB5</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

@@ -38,6 +38,7 @@ namespace CardScanBinding
     }
 
     // @interface CreditCard : NSObject
+    [Protocol]
     [BaseType(typeof(NSObject))]
     [DisableDefaultCtor]
     interface CreditCard
