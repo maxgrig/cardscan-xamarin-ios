@@ -1,0 +1,33 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardScanDemo", "CardScanDemo\CardScanDemo.csproj", "{A065CD15-74D4-41AD-8722-3F071BD7FD1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardScanBinding", "CardScanBinding\CardScanBinding.csproj", "{B3A21E5B-505A-4AA7-83B8-1475A83CC382}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Release|iPhone = Release|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Debug|iPhone.Build.0 = Debug|iPhone
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Release|iPhone.ActiveCfg = Release|iPhone
+		{A065CD15-74D4-41AD-8722-3F071BD7FD1A}.Release|iPhone.Build.0 = Release|iPhone
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{B3A21E5B-505A-4AA7-83B8-1475A83CC382}.Release|iPhone.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
