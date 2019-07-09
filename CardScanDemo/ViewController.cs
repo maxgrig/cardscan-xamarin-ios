@@ -20,25 +20,35 @@ namespace CardScanDemo
 
         private void BtnScan_TouchUpInside(object sender, EventArgs e)
         {
+            lblCardNumber.Text = " ";
+            lblExpiryDate.Text = " ";
+
             var vc = ScanViewController.CreateViewControllerWithDelegate(this);
-            var c = ScanViewController.IsCompatible;
-            //ScanViewController
             PresentViewController(vc, true, null);
-        }
-            
-        public void UserDidCancel(ScanViewController scanViewController)
-        {
-           
         }
 
         public void UserDidScanCard(ScanViewController scanViewController, CreditCard creditCard)
         {
-            
+            var cardNumber = creditCard?.Number ?? "";
+            for (int i = 4; i < cardNumber.Length; i += 4)
+            {
+                cardNumber = cardNumber.Insert(i + i / 4 - 1, " ");
+            }
+
+            lblCardNumber.Text = cardNumber;
+            lblExpiryDate.Text = $"{creditCard?.ExpiryMonth}/{creditCard?.ExpiryYear}".Trim('/');
+
+            DismissViewController(true, null);
+        }
+
+        public void UserDidCancel(ScanViewController scanViewController)
+        {
+            DismissViewController(true, null);
         }
 
         public void UserDidSkip(ScanViewController scanViewController)
         {
-            
+            DismissViewController(true, null);
         }
     }
 }
