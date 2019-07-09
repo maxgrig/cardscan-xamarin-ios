@@ -4,7 +4,6 @@ using CardScan;
 using CoreGraphics;
 using CoreMedia;
 using Foundation;
-using ObjCRuntime;
 using UIKit;
 
 [Static]
@@ -56,9 +55,10 @@ interface CreditCard
 	[NullAllowed, Export ("name")]
 	string Name { get; set; }
 
-	// @property (nonatomic, strong) UIImage * _Nullable image;
-	[NullAllowed, Export ("image", ArgumentSemantic.Strong)]
-	UIImage Image { get; set; }
+	// -(STPCardParams * _Nonnull)cardParams __attribute__((warn_unused_result));
+	[Export ("cardParams")]
+	[Verify (MethodToProperty)]
+	STPCardParams CardParams { get; }
 
 	// +(instancetype _Nonnull)new __attribute__((deprecated("-init is unavailable")));
 	[Static]
@@ -90,87 +90,10 @@ interface ScanDelegate
 	void UserDidSkip (ScanViewController scanViewController);
 }
 
-// @protocol ScanStringsDataSource
-[Protocol, Model]
-interface ScanStringsDataSource
-{
-	// @required -(NSString * _Nonnull)scanCard __attribute__((warn_unused_result));
-	[Abstract]
-	[Export ("scanCard")]
-	[Verify (MethodToProperty)]
-	string ScanCard { get; }
-
-	// @required -(NSString * _Nonnull)positionCard __attribute__((warn_unused_result));
-	[Abstract]
-	[Export ("positionCard")]
-	[Verify (MethodToProperty)]
-	string PositionCard { get; }
-
-	// @required -(NSString * _Nonnull)backButton __attribute__((warn_unused_result));
-	[Abstract]
-	[Export ("backButton")]
-	[Verify (MethodToProperty)]
-	string BackButton { get; }
-
-	// @required -(NSString * _Nonnull)skipButton __attribute__((warn_unused_result));
-	[Abstract]
-	[Export ("skipButton")]
-	[Verify (MethodToProperty)]
-	string SkipButton { get; }
-}
-
 // @interface ScanViewController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate>
 [BaseType (typeof(UIViewController))]
 interface ScanViewController : IAVCaptureVideoDataOutputSampleBufferDelegate
 {
-	// @property (nonatomic, weak) id<ScanStringsDataSource> _Nullable stringDataSource;
-	[NullAllowed, Export ("stringDataSource", ArgumentSemantic.Weak)]
-	ScanStringsDataSource StringDataSource { get; set; }
-
-	// @property (nonatomic) BOOL allowSkip;
-	[Export ("allowSkip")]
-	bool AllowSkip { get; set; }
-
-	// @property (nonatomic) double errorCorrectionDuration;
-	[Export ("errorCorrectionDuration")]
-	double ErrorCorrectionDuration { get; set; }
-
-	// @property (nonatomic) BOOL includeCardImage;
-	[Export ("includeCardImage")]
-	bool IncludeCardImage { get; set; }
-
-	// @property (nonatomic) BOOL hideBackButtonImage;
-	[Export ("hideBackButtonImage")]
-	bool HideBackButtonImage { get; set; }
-
-	// @property (nonatomic, strong) UIImage * _Nullable backButtonImage;
-	[NullAllowed, Export ("backButtonImage", ArgumentSemantic.Strong)]
-	UIImage BackButtonImage { get; set; }
-
-	// @property (nonatomic, strong) UIColor * _Nullable backButtonColor;
-	[NullAllowed, Export ("backButtonColor", ArgumentSemantic.Strong)]
-	UIColor BackButtonColor { get; set; }
-
-	// @property (nonatomic, strong) UIFont * _Nullable backButtonFont;
-	[NullAllowed, Export ("backButtonFont", ArgumentSemantic.Strong)]
-	UIFont BackButtonFont { get; set; }
-
-	// @property (nonatomic, strong) UIFont * _Nullable scanCardFont;
-	[NullAllowed, Export ("scanCardFont", ArgumentSemantic.Strong)]
-	UIFont ScanCardFont { get; set; }
-
-	// @property (nonatomic, strong) UIFont * _Nullable positionCardFont;
-	[NullAllowed, Export ("positionCardFont", ArgumentSemantic.Strong)]
-	UIFont PositionCardFont { get; set; }
-
-	// @property (nonatomic, strong) UIFont * _Nullable skipButtonFont;
-	[NullAllowed, Export ("skipButtonFont", ArgumentSemantic.Strong)]
-	UIFont SkipButtonFont { get; set; }
-
-	// @property (nonatomic, strong) NSNumber * _Nullable backButtonImageToTextDelta;
-	[NullAllowed, Export ("backButtonImageToTextDelta", ArgumentSemantic.Strong)]
-	NSNumber BackButtonImageToTextDelta { get; set; }
-
 	// +(ScanViewController * _Nullable)createViewControllerWithDelegate:(id<ScanDelegate> _Nullable)delegate __attribute__((warn_unused_result));
 	[Static]
 	[Export ("createViewControllerWithDelegate:")]
@@ -187,16 +110,6 @@ interface ScanViewController : IAVCaptureVideoDataOutputSampleBufferDelegate
 	[Export ("isCompatible")]
 	[Verify (MethodToProperty)]
 	bool IsCompatible { get; }
-
-	// +(UIImage * _Nullable)cameraImage __attribute__((warn_unused_result));
-	[Static]
-	[NullAllowed, Export ("cameraImage")]
-	[Verify (MethodToProperty)]
-	UIImage CameraImage { get; }
-
-	// -(void)cancelWithCallDelegate:(BOOL)callDelegate;
-	[Export ("cancelWithCallDelegate:")]
-	void CancelWithCallDelegate (bool callDelegate);
 
 	// -(void)viewDidLoad;
 	[Export ("viewDidLoad")]

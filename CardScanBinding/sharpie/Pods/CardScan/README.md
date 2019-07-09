@@ -12,14 +12,14 @@ CardScan iOS installation guide
 * [iOS 10 and older (Swift)](#ios-10-and-older-swift)
 * [Configure CardScan (Objective C)](#configure-cardscan-objective-c)
 * [Using CardScan (Objective C)](#using-cardscan-objective-c)
-* [iOS 10 and older (Objective C)](#ios-10-and-older-objective-c)
+* [iOS 10 and older (Objective C)](#ios-10-and-older-objective-c)]
 * [Authors](#authors)
 * [License](#license)
 
 ## Requirements
 
 * Objective C or Swift 4.0 or higher
-* iOS 11 or higher (supports development target of iOS 10.0 or higher)
+* iOS 11 or higher (supports development target of iOS 9.0 or higher)
 
 ## Installation
 
@@ -27,15 +27,18 @@ CardScan is available through [CocoaPods](https://cocoapods.org). To install
 it, add the following line to your Podfile:
 
 ```ruby
-pod 'CardScan'
+pod 'CardScan', :git => 'git@github.com:getbouncer/cardscan-ios.git', :tag => '1.0.4034'
 ```
 
 Or if you're using Stripe:
 
 ```ruby
-pod 'CardScan'
-pod 'CardScan/Stripe'
+pod 'CardScan', :git => 'git@github.com:getbouncer/cardscan-ios.git', :tag => '1.0.4034'
+pod 'CardScan/Stripe', :git => 'git@github.com:getbouncer/cardscan-ios.git', :tag => '1.0.4034'
 ```
+
+Make sure that you include the `use_frameworks!` line in your Podfile
+since CardScan is a Framework written in Swift.
 
 Next, install the new pod. From a terminal, run:
 
@@ -135,11 +138,11 @@ class ViewController: UIViewController, ScanDelegate {
 }
 ```
 
-## iOS 10 (Swift)
+## iOS 10 and older (Swift)
 
 CardScan makes heavy use of CoreML, which Apple introduced in iOS
 11. You can include the CardScan library in any projects that support
-a development target of iOS 10.0 or higher, but it will only run on
+a development target of iOS 9.0 or higher, but it will only run on
 devices that are running iOS 11 or higher.
 
 To check if a device supports CardScan at runtime, use the
@@ -217,10 +220,10 @@ implement the `ScanDelegate` protocol to get the results.
 @end
 ```
 
-## iOS 10 (Objective C)
+## iOS 10 and older (Objective C)
 CardScan makes heavy use of CoreML, which Apple introduced in iOS
 11. You can include the CardScan library in any projects that support
-a development target of iOS 10.0 or higher, but it will only run on
+a development target of iOS 9.0 or higher, but it will only run on
 devices that are running iOS 11 or higher.
 
 To check if a device supports CardScan at runtime, use the
@@ -232,16 +235,9 @@ if (![ScanViewController isCompatible]) {
 }
 ```
 
-## Adding to Your App
-
-When added to your app successfully, you should see the card numbers
-being passed into your payment form. This is what it looks like using a standard Stripe mobile payment form:
-
-![alt text](https://raw.githubusercontent.com/getbouncer/cardscan-ios/master/card_scan.gif "Card Scan Gif")
-
 ## Authors
 
-Sam King, Jaime Park, and Andy Li
+Sam King and Jaime Park
 
 ## License
 

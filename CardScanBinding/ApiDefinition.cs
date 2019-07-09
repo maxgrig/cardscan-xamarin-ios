@@ -23,7 +23,7 @@ namespace CardScanBinding
     }
 
     // @interface CornerView : UIView
-    [BaseType(typeof(UIView))]
+    [BaseType(typeof(UIView), Name = "_TtC8CardScan10CornerView")]
     interface CornerView
     {
         // -(instancetype _Nonnull)initWithFrame:(CGRect)frame __attribute__((objc_designated_initializer));
@@ -39,7 +39,7 @@ namespace CardScanBinding
 
     // @interface CreditCard : NSObject
     [Protocol]
-    [BaseType(typeof(NSObject))]
+    [BaseType(typeof(NSObject), Name = "_TtC8CardScan10CreditCard")]
     [DisableDefaultCtor]
     interface CreditCard
     {
@@ -72,7 +72,7 @@ namespace CardScanBinding
     // @protocol ScanDelegate
     interface IScanDelegate { }
 
-    [BaseType(typeof(NSObject))]
+    [BaseType(typeof(NSObject), Name = "_TtP8CardScan12ScanDelegate_")]
     [Protocol, Model]
     interface ScanDelegate
     {
@@ -130,7 +130,7 @@ namespace CardScanBinding
 
     // @interface ScanViewController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate>
     //[Protocol]
-    [BaseType(typeof(UIViewController))]
+    [BaseType(typeof(UIViewController), Name = "_TtC8CardScan18ScanViewController")]
     interface ScanViewController : IAVCaptureVideoDataOutputSampleBufferDelegate
     {
         // @property (nonatomic, weak) id<ScanStringsDataSource> _Nullable stringDataSource;

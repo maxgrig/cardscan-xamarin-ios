@@ -196,7 +196,7 @@ SWIFT_CLASS("_TtC8CardScan10CornerView")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class UIImage;
+@class STPCardParams;
 
 SWIFT_CLASS("_TtC8CardScan10CreditCard")
 @interface CreditCard : NSObject
@@ -204,7 +204,7 @@ SWIFT_CLASS("_TtC8CardScan10CreditCard")
 @property (nonatomic, copy) NSString * _Nullable expiryMonth;
 @property (nonatomic, copy) NSString * _Nullable expiryYear;
 @property (nonatomic, copy) NSString * _Nullable name;
-@property (nonatomic, strong) UIImage * _Nullable image;
+- (STPCardParams * _Nonnull)cardParams SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 + (nonnull instancetype)new SWIFT_DEPRECATED_MSG("-init is unavailable");
 @end
@@ -221,41 +221,15 @@ SWIFT_PROTOCOL("_TtP8CardScan12ScanDelegate_")
 - (void)userDidSkip:(ScanViewController * _Nonnull)scanViewController;
 @end
 
-
-SWIFT_PROTOCOL("_TtP8CardScan21ScanStringsDataSource_")
-@protocol ScanStringsDataSource
-- (NSString * _Nonnull)scanCard SWIFT_WARN_UNUSED_RESULT;
-- (NSString * _Nonnull)positionCard SWIFT_WARN_UNUSED_RESULT;
-- (NSString * _Nonnull)backButton SWIFT_WARN_UNUSED_RESULT;
-- (NSString * _Nonnull)skipButton SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class UIColor;
-@class UIFont;
-@class NSNumber;
 @class AVCaptureOutput;
 @class AVCaptureConnection;
 @class NSBundle;
 
 SWIFT_CLASS("_TtC8CardScan18ScanViewController")
 @interface ScanViewController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate>
-@property (nonatomic, weak) id <ScanStringsDataSource> _Nullable stringDataSource;
-@property (nonatomic) BOOL allowSkip;
-@property (nonatomic) double errorCorrectionDuration;
-@property (nonatomic) BOOL includeCardImage;
-@property (nonatomic) BOOL hideBackButtonImage;
-@property (nonatomic, strong) UIImage * _Nullable backButtonImage;
-@property (nonatomic, strong) UIColor * _Nullable backButtonColor;
-@property (nonatomic, strong) UIFont * _Nullable backButtonFont;
-@property (nonatomic, strong) UIFont * _Nullable scanCardFont;
-@property (nonatomic, strong) UIFont * _Nullable positionCardFont;
-@property (nonatomic, strong) UIFont * _Nullable skipButtonFont;
-@property (nonatomic, strong) NSNumber * _Nullable backButtonImageToTextDelta;
 + (ScanViewController * _Nullable)createViewControllerWithDelegate:(id <ScanDelegate> _Nullable)delegate SWIFT_WARN_UNUSED_RESULT;
 + (void)configure;
 + (BOOL)isCompatible SWIFT_WARN_UNUSED_RESULT;
-+ (UIImage * _Nullable)cameraImage SWIFT_WARN_UNUSED_RESULT;
-- (void)cancelWithCallDelegate:(BOOL)callDelegate;
 - (void)viewDidLoad;
 @property (nonatomic, readonly) BOOL shouldAutorotate;
 @property (nonatomic, readonly) UIInterfaceOrientationMask supportedInterfaceOrientations;

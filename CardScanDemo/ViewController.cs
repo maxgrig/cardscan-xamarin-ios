@@ -22,6 +22,7 @@ namespace CardScanDemo
         {
             var vc = ScanViewController.CreateViewControllerWithDelegate(this);
             var c = ScanViewController.IsCompatible;
+            //ScanViewController
             PresentViewController(vc, true, null);
         }
             

@@ -1,13 +1,10 @@
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/CardScan-dummy.o
-/Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/AppState.o
-/Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/BundleURL.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/CornerView.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/CreditCardUtils.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/DetectedBox.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/Expiry.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/FindFourOcr.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/ModelOutputExtensions.o
-/Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/Models.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/Ocr.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/PostDetectionAlgorithm.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/PredictionResult.o
@@ -19,4 +16,6 @@
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/Torch.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/UIImage+pixelBuffer.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/VideoFeed.o
+/Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/FindFour.o
+/Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/FourRecognize.o
 /Users/maxgrig/Projects/CardScan-Xamarin-iOS/CardScanBinding/sharpie/build/Pods.build/Release-iphoneos/CardScan.build/Objects-normal/arm64/CardScan_vers.o

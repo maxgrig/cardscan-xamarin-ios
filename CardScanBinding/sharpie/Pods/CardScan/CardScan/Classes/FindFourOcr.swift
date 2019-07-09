@@ -19,24 +19,11 @@ import Foundation
  make a lot of mistakes, thus the need for post processing algorithsm. The
  post processing algorithms take the boxes and try to find combinations that are
  likely numbers, combining and filtering out boxes as it goes.
- 
- WARNING WARNING WARNING this class is _not_ thread safe. Make sure you call all
- of these functions from the same serial queue or thread.
- 
  */
 @available(iOS 11.0, *)
 struct FindFourOcr {
-    static var recognizeModel: FourRecognize? = nil
-    static var detectModel: FindFour? = nil
-    
-    // These should all be `let` but setting as var for testing
-    static var findFourResource = "FindFour"
-    static let findFourExtension = "bin"
-    static let findFourModelc = "FindFour.mlmodelc"
-    static var fourRecognizeResource = "FourRecognize"
-    static let fourRecognizeExtension = "bin"
-    static let fourRecognizeModelc = "FourRecognize.mlmodelc"
-    
+    static let recognizeModel = FourRecognize()
+    static let detectModel = FindFour()
     let modelString = "findFour"
     var algorithm: String?
     
@@ -65,53 +52,18 @@ struct FindFourOcr {
      function will help.
      */
     func warmUp() {
-        FindFourOcr.initializeModels()
-        
         UIGraphicsBeginImageContext(CGSize(width: kCardWidth, height: kCardHeight))
         UIColor.white.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: kCardWidth, height: kCardHeight))
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        guard let detectModel = FindFourOcr.detectModel, let recognizeModel = FindFourOcr.recognizeModel else {
-            print("Models not initialized")
-            return
-        }
-        
         if let pixelBuffer = newImage?.pixelBuffer(width: kCardWidth, height: kCardHeight) {
-            let _ = try? detectModel.prediction(input1: pixelBuffer)
+            let _ = try? FindFourOcr.detectModel.prediction(input1: pixelBuffer)
         }
         
         if let pixelBuffer = newImage?.pixelBuffer(width: kBoxWidth, height: kBoxHeight) {
-            let _ = try? recognizeModel.prediction(input1: pixelBuffer)
-        }
-    }
-    
-    static func initializeModels() {
-        if FindFourOcr.recognizeModel == nil {
-            guard let fourRecognizeUrl = BundleURL.compiledModel(forResource: fourRecognizeResource, withExtension: fourRecognizeExtension, modelName: fourRecognizeModelc) else {
-                print("Could not find URL for FourRecognize")
-                return
-            }
-            
-            guard let recognizeModel = try? FourRecognize(contentsOf: fourRecognizeUrl) else {
-                print("Could not get contents of recognize model with fourRecognize URL")
-                return
-            }
-            
-            FindFourOcr.recognizeModel = recognizeModel
-        }
-        if FindFourOcr.detectModel == nil {
-            guard let findFourUrl = BundleURL.compiledModel(forResource: findFourResource, withExtension: findFourExtension, modelName: findFourModelc) else {
-                print("Could not find URL for FindFour")
-                return
-            }
-            
-            guard let detectModel = try? FindFour(contentsOf: findFourUrl) else {
-                print("Could not get contents of detect model with findFour URL")
-                return
-            }
-            FindFourOcr.detectModel = detectModel
+            let _ = try? FindFourOcr.recognizeModel.prediction(input1: pixelBuffer)
         }
     }
     
@@ -152,19 +104,12 @@ struct FindFourOcr {
     func findFourNumber(image: UIImage) -> (String?, [CGRect]?, [CGRect]?, [CGRect]?, Expiry?, String?) {
         var algorithm: String?
         
-        FindFourOcr.initializeModels()
-        
         guard let pixelBuffer = image.pixelBuffer(width: kCardWidth, height: kCardHeight) else {
             return (nil, nil, nil, nil, nil, nil)
         }
         
-        guard let detectModel = FindFourOcr.detectModel else {
-            print("Models not initialized")
-            return (nil, nil, nil, nil, nil, nil)
-        }
-        
         let modelInput = FindFourInput(input1: pixelBuffer)
-        guard let prediction = try? detectModel.prediction(input: modelInput) else {
+        guard let prediction = try? FindFourOcr.detectModel.prediction(input: modelInput) else {
             return (nil, nil, nil, nil, nil, nil)
         }
         guard let cgImage = image.cgImage else {

@@ -1,18 +1,33 @@
 PODS:
-  - CardScan (1.0.4059):
-    - CardScan/Core (= 1.0.4059)
-  - CardScan/Core (1.0.4059)
+  - CardScan (1.0.4034):
+    - CardScan/Core (= 1.0.4034)
+  - CardScan/Core (1.0.4034)
+  - CardScan/Stripe (1.0.4034):
+    - Stripe
+  - Stripe (15.0.1)
 
 DEPENDENCIES:
-  - CardScan
+  - "CardScan (from `git@github.com:getbouncer/cardscan-ios.git`, tag `1.0.4034`)"
+  - "CardScan/Stripe (from `git@github.com:getbouncer/cardscan-ios.git`, tag `1.0.4034`)"
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - CardScan
+    - Stripe
+
+EXTERNAL SOURCES:
+  CardScan:
+    :git: "git@github.com:getbouncer/cardscan-ios.git"
+    :tag: 1.0.4034
+
+CHECKOUT OPTIONS:
+  CardScan:
+    :git: "git@github.com:getbouncer/cardscan-ios.git"
+    :tag: 1.0.4034
 
 SPEC CHECKSUMS:
-  CardScan: 11b7837fcd2d1f40f7e530e7d2e376aac8256f56
+  CardScan: f19b803789ecf49c6ebaf80dd0c4d492e44e8dd8
+  Stripe: 2c4d0a88817361a102886315ff452d90f65e898b
 
-PODFILE CHECKSUM: b087cea86b70f701bc385e4ffb2a6c8c013d98e3
+PODFILE CHECKSUM: ae9d9c5ef55269a8e86ed34ee4bec31eabed8ef3
 
 COCOAPODS: 1.6.0

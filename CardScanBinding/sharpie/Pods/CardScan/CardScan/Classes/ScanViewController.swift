@@ -16,7 +16,12 @@ import Vision
     import Stripe
 #endif
 
-
+//
+// TODOS:
+//
+// * Need to handle camera permissions a bit better
+// * Figure out if we need to drop the framerate dynamically
+//
 @objc public protocol ScanDelegate {
     @objc func userDidCancel(_ scanViewController: ScanViewController)
     @objc func userDidScanCard(_ scanViewController: ScanViewController, creditCard: CreditCard)
@@ -24,19 +29,11 @@ import Vision
     @objc func userDidSkip(_ scanViewController: ScanViewController)
 }
 
-@objc public protocol ScanStringsDataSource {
-    @objc func scanCard() -> String
-    @objc func positionCard() -> String
-    @objc func backButton() -> String
-    @objc func skipButton() -> String
-}
-
 @objc public class CreditCard: NSObject {
     @objc public var number: String
     @objc public var expiryMonth: String?
     @objc public var expiryYear: String?
     @objc public var name: String?
-    @objc public var image: UIImage?
     
     public init(number: String) {
         self.number = number
@@ -58,48 +55,26 @@ import Vision
 
 @objc public class ScanViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    public weak var scanDelegate: ScanDelegate?
-    @objc public weak var stringDataSource: ScanStringsDataSource?
-    @objc public var allowSkip = false
+    public var scanDelegate: ScanDelegate?
+    public var allowSkip = false
     public var scanQrCode = false
-    @objc public var errorCorrectionDuration = 1.5
-    @objc public var includeCardImage = false
-    @objc public var hideBackButtonImage = false
-    @IBOutlet weak var backButtonImageToTextConstraint: NSLayoutConstraint!
-    @IBOutlet weak var backButtonWidthConstraint: NSLayoutConstraint!
-    @objc public var backButtonImage: UIImage?
-    @objc public var backButtonColor: UIColor?
-    @objc public var backButtonFont: UIFont?
-    @objc public var scanCardFont: UIFont?
-    @objc public var positionCardFont: UIFont?
-    @objc public var skipButtonFont: UIFont?
-    @objc public var backButtonImageToTextDelta: NSNumber?
     
     static public let machineLearningQueue = DispatchQueue(label: "CardScanMlQueue")
-    // Only access this variable from the machineLearningQueue
-    static var hasRegisteredAppNotifications = false
     
     @IBOutlet weak var expiryLabel: UILabel!
     @IBOutlet weak var cardNumberLabel: UILabel!
     @IBOutlet weak var blurView: UIView!
-    
-    @IBOutlet weak var scanCardLabel: UILabel!
-    @IBOutlet weak var positionCardLabel: UILabel!
+    @IBOutlet weak var ScanBelowLabel: UILabel!
     @IBOutlet weak var skipButton: UIButton!
-    @IBOutlet weak var backButton: UIButton!
-    @IBOutlet weak var backButtonImageButton: UIButton!
-    
     @IBOutlet weak var previewView: PreviewView!
     @IBOutlet weak var regionOfInterestLabel: UILabel!
     @IBOutlet weak var regionOfInterestAspectConstraint: NSLayoutConstraint!
-    var regionOfInterestLabelFrame: CGRect?
     
     @IBOutlet weak var torchButton: UIButton!
     var videoFeed = VideoFeed()
     private let machineLearningSemaphore = DispatchSemaphore(value: 1)
     
     var currentImageRect: CGRect?
-    var scannedCardImage: UIImage?
     
     var numberLabel: UILabel?
     var notMatchedCount = 0
@@ -115,10 +90,7 @@ import Vision
             return nil
         }
         
-        let bundleUrl = Bundle(for: ScanViewController.self).url(forResource: "CardScan", withExtension: "bundle")!
-        let bundle = Bundle(url: bundleUrl)!
-        
-        let storyboard = UIStoryboard(name: "CardScan", bundle: bundle)
+        let storyboard = UIStoryboard(name: "CardScan", bundle: Bundle(for: ScanViewController.self))
         let viewController = storyboard.instantiateViewController(withIdentifier: "scanCardViewController") as! ScanViewController
             viewController.scanDelegate = delegate
         return viewController
@@ -127,42 +99,9 @@ import Vision
     @objc static public func configure() {
         self.machineLearningQueue.async {
             if #available(iOS 11.0, *) {
-                registerAppNotifications()
                 Ocr.configure()
             }
         }
-    }
-    
- 
-    // We're keeping track of the app's background state because we need to shut down
-    // our ML threads, which use the GPU. Since there can be ML tasks in flight when
-    // this happens our correctness criteria is:
-    //   * For any new tasks, if we have `inBackground` set then we know that they
-    //     won't hit the GPU
-    //   * For any pending tasks, our sync block ensures that they finish before
-    //     this returns
-    //   * The willResignActive function blocks the transition to the background until
-    //     it completes, which we couldn't find docs on but verified experimentally
-    @objc static func willResignActive() {
-        AppState.inBackground = true
-        // this makes sure that any currently running predictions finish before we
-        // let the app go into the background
-        ScanViewController.machineLearningQueue.sync { }
-    }
-    
-    @objc static func didBecomeActive() {
-        AppState.inBackground = false
-    }
-    
-    // Only call this function from the machineLearningQueue
-    static func registerAppNotifications() {
-        if hasRegisteredAppNotifications {
-            return
-        }
-        
-        hasRegisteredAppNotifications = true
-        NotificationCenter.default.addObserver(self, selector: #selector(willResignActive), name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
     @objc static public func isCompatible() -> Bool {
@@ -173,43 +112,26 @@ import Vision
         }
     }
     
-    @objc static public func cameraImage() -> UIImage? {
-        let bundleUrl = Bundle(for: ScanViewController.self).url(forResource: "CardScan", withExtension: "bundle")!
-        let bundle = Bundle(url: bundleUrl)!
-        
-        return UIImage(named: "camera", in: bundle, compatibleWith: nil)
-    }
-    
     @IBAction func backTextPress() {
         self.backButtonPress("")
     }
     
     @IBAction func backButtonPress(_ sender: Any) {
-        // Note: for the back button we may call the `userCancelled` delegate even if the
-        // delegate has been called just as a safety precation to always provide the
-        // user with a way to get out.
+        if self.calledDelegate {
+            return
+        }
         self.ocr.userCancelled()
         self.calledDelegate = true
         self.scanDelegate?.userDidCancel(self)
     }
     
     @IBAction func skipButtonPress() {
-        // Same for the skip button, like with the back button press we may call the
-        // delegate function even if it's already been called
+        if self.calledDelegate {
+            return
+        }
         self.ocr.userCancelled()
         self.calledDelegate = true
         self.scanDelegate?.userDidSkip(self)
-    }
-
-    @objc public func cancel(callDelegate: Bool) {
-        if !self.calledDelegate {
-            self.ocr.userCancelled()
-            self.calledDelegate = true
-        }
-
-        if calledDelegate {
-            self.scanDelegate?.userDidCancel(self)
-        }
     }
     
     //jaime: added function to create blur mask
@@ -230,16 +152,13 @@ import Vision
     }
     
     func setupMask() {
-        // store .frame to avoid accessing UI APIs in the machineLearningQueue
-        self.regionOfInterestLabelFrame = self.regionOfInterestLabel.frame
-
-        let regionOfInterestCenterY = self.regionOfInterestLabel.frame.origin.y + self.regionOfInterestLabel.frame.size.height / 2.0
-        
-        let x = regionOfInterestLabel.frame.origin.x
-        let width = self.view.frame.width - (2.0 * x)
+        // these values are all copied from interface builder for setting
+        // up the region of interest label. For some reason this value changes
+        // as the screen sets up so we'll just hard code it here
+        let x = CGFloat(16.0)
+        let width = self.view.frame.width - 32.0
         let height = width * 226.0 / 359.0
-        let y = regionOfInterestCenterY - height / 2.0
-        
+        let y = self.view.frame.height * 0.5 - height * 0.5
         let frame = CGRect(x: x, y: y, width: width, height: height)
         self.maskPreviewView(viewToMask: self.blurView, maskRect: frame)
         
@@ -260,53 +179,9 @@ import Vision
         self.previewView.addSubview(cornersView)
     }
     
-    func setStrings() {
-        guard let dataSource = self.stringDataSource else {
-            return
-        }
-        
-        self.scanCardLabel.text = dataSource.scanCard()
-        self.positionCardLabel.text = dataSource.positionCard()
-        self.skipButton.setTitle(dataSource.skipButton(), for: .normal)
-        self.backButton.setTitle(dataSource.backButton(), for: .normal)
-    }
-    
-    func setUiCustomization() {
-        if self.hideBackButtonImage {
-            self.backButtonImageButton.setImage(nil, for: .normal)
-            // the image button is 8 from safe area and has a width of 32 the
-            // label has a leading constraint of -11 so setting the width to
-            // 19 sets the space from the safe region to 16
-            self.backButtonWidthConstraint.constant = 19
-        } else if let newImage = self.backButtonImage {
-            self.backButtonImageButton.setImage(newImage, for: .normal)
-        }
-        
-        if let color = self.backButtonColor {
-            self.backButton.setTitleColor(color, for: .normal)
-        }
-        if let font = self.backButtonFont {
-            self.backButton.titleLabel?.font = font
-        }
-        if let font = self.scanCardFont {
-            self.scanCardLabel.font = font
-        }
-        if let font = self.positionCardFont {
-            self.positionCardLabel.font = font
-        }
-        if let font = self.skipButtonFont {
-            self.skipButton.titleLabel?.font = font
-        }
-        if let delta = self.backButtonImageToTextDelta.map({ CGFloat($0.floatValue) }) {
-            self.backButtonImageToTextConstraint.constant += delta
-        }
-    }
-    
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        self.setStrings()
-        self.setUiCustomization()
         setNeedsStatusBarAppearanceUpdate()
         
         if self.scanQrCode {
@@ -318,7 +193,7 @@ import Vision
                 // Fallback on earlier versions
             }
             self.regionOfInterestLabel.text = nil
-            self.scanCardLabel.text = "Scan QR Code"
+            self.ScanBelowLabel.text = "Scan QR Code"
         }
         
         self.regionOfInterestLabel.layer.masksToBounds = true
@@ -333,10 +208,13 @@ import Vision
             self.skipButton.isHidden = true
         }
 
-        self.ocr.errorCorrectionDuration = self.errorCorrectionDuration
-        
         self.videoFeed.requestCameraAccess()
         self.previewView.videoPreviewLayer.session = self.videoFeed.session
+        self.videoFeed.setup(captureDelegate: self) { success in
+            if success {
+                self.setupMask()
+            }
+        }
     }
     
     override public var shouldAutorotate: Bool {
@@ -353,13 +231,6 @@ import Vision
     
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        self.videoFeed.setup(captureDelegate: self) { success in
-            if success {
-                self.setupMask()
-            }
-        }
-        
         self.videoFeed.willAppear()
         self.isNavigationBarHidden = self.navigationController?.isNavigationBarHidden ?? true
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -380,6 +251,15 @@ import Vision
     }
     
     func showCardNumber(_ number: String, expiry: String?) {
+        /*
+        guard let imageRect = self.currentImageRect else {
+            return
+        }
+        
+        guard let numberRect = self.ocr.scanStats.numberRect else {
+            return
+        }*/
+        
         // we're assuming that the image takes up the full width and that
         // video has the same aspect ratio of the screen
         DispatchQueue.main.async {
@@ -394,13 +274,38 @@ import Vision
                     self.expiryLabel.fadeIn()
                 }
             }
+            
+            /*
+            let scaleX = self.view.frame.width / imageRect.width
+            let scaleY = self.view.frame.height / (2.0 * (imageRect.minY + imageRect.height / 2.0))
+            let numberHeight = numberRect.height * scaleY
+            let numberWidth = numberRect.width * scaleX
+            
+            let numberX = (numberRect.minX + imageRect.minX) * scaleX
+            let numberY = (numberRect.minY + imageRect.minY) * scaleY - numberHeight - 8.0
+            
+            let frameRect = CGRect(x: numberX, y: numberY, width: numberWidth, height: 50.0)
+            
+            let label = self.numberLabel ?? UILabel(frame: frameRect)
+            label.frame = frameRect
+            label.textAlignment = .center
+            label.text = CreditCardUtils.format(number: number)
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.1
+            label.textColor = #colorLiteral(red: 0.2980392157, green: 0.8509803922, blue: 0.3921568627, alpha: 1)
+            label.font = label.font.withSize(60.0)
+
+            if self.numberLabel == nil {
+                self.numberLabel = label
+                self.previewView.addSubview(label)
+            }
+            */
         }
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if self.machineLearningSemaphore.wait(timeout: .now()) == .success {
             ScanViewController.machineLearningQueue.async {
-                ScanViewController.registerAppNotifications()
                 self.captureOutputWork(sampleBuffer: sampleBuffer)
             }
         }
@@ -413,7 +318,7 @@ import Vision
             
             if let barcode = result as? VNBarcodeObservation, barcode.symbology == .QR {
                 if let payload = barcode.payloadStringValue {
-                    DispatchQueue.main.async {
+                    DispatchQueue.main.sync {
                         if self.calledDelegate {
                             return
                         }
@@ -454,16 +359,13 @@ import Vision
     
     @available(iOS 11.0, *)
     func blockingOcrModel(rawImage: CGImage) {
-        let (number, expiry, done, foundNumberInThisScan) = ocr.performWithErrorCorrection(for: rawImage)
+        let (number, expiry, done) = ocr.performWithErrorCorrection(for: rawImage)
         if let number = number {
             self.showCardNumber(number, expiry: expiry?.display())
-            if self.includeCardImage && foundNumberInThisScan {
-                self.scannedCardImage = UIImage(cgImage: rawImage)
-            }
         }
         
         if done {
-            DispatchQueue.main.async {
+            DispatchQueue.main.sync {
                 guard let number = number else {
                     return
                 }
@@ -482,13 +384,12 @@ import Vision
                 let card = CreditCard(number: number)
                 card.expiryMonth = expiry.map { String($0.month) }
                 card.expiryYear = expiry.map { String($0.year) }
-                card.image = self.scannedCardImage
                 self.scanDelegate?.userDidScanCard(self, creditCard: card)
             }
         }
     }
     
-    func captureOutputWork(sampleBuffer: CMSampleBuffer) {
+    func captureOutputWork(sampleBuffer: CMSampleBuffer) {        
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             print("could not get the pixel buffer, dropping frame")
             self.machineLearningSemaphore.signal()
@@ -533,57 +434,16 @@ import Vision
             return nil
         }
         
+        // we're assuming that the preview frame is centered in the view, if it's not then
+        // this calculation doesn't work. You'd need to grab references to the previewViewFrame
+        // and the regionOfInterestFrame to figure it out
+        
         // use the full width
-        let width = CGFloat(image.width)
+        let width = Double(image.width)
         // keep the aspect ratio at 480:302
         let height = width * 302.0 / 480.0
-        
-        // get device screen size
-        let screen = UIScreen.main.bounds
-        let screenWidth = screen.size.width
-        let screenHeight = screen.size.height
-        
-        guard let regionOfInterestLabelFrame = self.regionOfInterestLabelFrame else {
-            return nil
-        }
-        
-        // ROI center in Points
-        let regionOfInterestCenterX = regionOfInterestLabelFrame.origin.x + regionOfInterestLabelFrame.size.width / 2.0
-        
-        let regionOfInterestCenterY = regionOfInterestLabelFrame.origin.y + regionOfInterestLabelFrame.size.height / 2.0
-        
-        // calculate center of cropping region in Pixels.
-        var cx, cy: CGFloat
-        
-        
-        // confirm videoGravity settings in previewView. Calculations based on .resizeAspectFill
-        DispatchQueue.main.async {
-            assert(self.previewView.videoPreviewLayer.videoGravity == .resizeAspectFill)
-        }
-
-        // Find out whether left/right or top/bottom of the image was cropped before it was displayed to previewView.
-        // The size of the cropped region is needed to map regionOfInterestCenter to the image center
-        let imageAspectRatio = CGFloat(image.width) / CGFloat(image.height)
-        let screenAspectRatio = screenWidth / screenHeight
-
-        // convert from points to pixels and account for the cropped region
-        if imageAspectRatio > screenAspectRatio {
-            // left and right of the image cropped
-            //      tested on: iPhone XS Max
-            let croppedOffset = (CGFloat(image.width) - CGFloat(image.height) * screenAspectRatio) / 2.0
-            let pointsToPixels = CGFloat(image.height) / screenHeight
-            
-            cx = regionOfInterestCenterX * pointsToPixels + croppedOffset
-            cy = regionOfInterestCenterY * pointsToPixels
-        } else {
-            // top and bottom of the image cropped
-            //      tested on: iPad Mini 2
-            let croppedOffset = (CGFloat(image.height) - CGFloat(image.width) / screenAspectRatio) / 2.0
-            let pointsToPixels = CGFloat(image.width) / screenWidth
-            
-            cx = regionOfInterestCenterX * pointsToPixels
-            cy = regionOfInterestCenterY * pointsToPixels + croppedOffset
-        }
+        let cx = Double(image.width) / 2.0
+        let cy = Double(image.height) / 2.0
         
         let rect = CGRect(x: cx - width / 2.0, y: cy - height / 2.0, width: width, height: height)
         

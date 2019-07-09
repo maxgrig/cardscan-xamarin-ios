@@ -48,6 +48,10 @@
         <CodesignKey>iPhone Developer</CodesignKey>
         <MtouchDebug>true</MtouchDebug>
         <MtouchLink>None</MtouchLink>
+        <MtouchNoSymbolStrip>true</MtouchNoSymbolStrip>
+        <MtouchSdkVersion>12.2</MtouchSdkVersion>
+        <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+        <MtouchExtraArgs>gcc_flags '-framework Security'</MtouchExtraArgs>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
         <DebugType>none</DebugType>
@@ -69,6 +73,9 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
+      <PackageReference Include="System.Net.Security">
+        <Version>4.3.2</Version>
+      </PackageReference>
     </ItemGroup>
     <ItemGroup>
         <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
@@ -124,6 +131,8 @@
     <ItemGroup>
         <None Include="Info.plist" />
         <None Include="Entitlements.plist" />
+        <None Include="IncludeSwift.targets" />
+        <None Include="add_swift_libs.sh" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Main.cs" />
@@ -140,4 +149,5 @@
       </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+    <Import Project="IncludeSwift.targets" />
 </Project>

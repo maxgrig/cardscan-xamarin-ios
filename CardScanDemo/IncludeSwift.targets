@@ -1,0 +1,28 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    
+  <PropertyGroup Condition="'$(Platform)' == 'iPhone'">
+    <CreateAppBundleDependsOn>
+        $(CreateAppBundleDependsOn);
+        IPhoneCopySwiftLibs;
+    </CreateAppBundleDependsOn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'iPhoneSimulator'">
+    <CreateAppBundleDependsOn>
+        $(CreateAppBundleDependsOn);
+        IPhoneSimulatorCopySwiftLibs;
+    </CreateAppBundleDependsOn>
+  </PropertyGroup>
+    
+  <Target Name="IPhoneCopySwiftLibs">
+    <Exec 
+      Condition="!Exists('$(DeviceSpecificIntermediateOutputPath)codesign/Frameworks')" 
+      Command="sh add_swift_libs.sh $(AppBundleDir) iPhone" />
+  </Target>
+    
+  <Target Name="IPhoneSimulatorCopySwiftLibs">
+    <Exec 
+      Condition="!Exists('$(DeviceSpecificIntermediateOutputPath)codesign/Frameworks')" 
+      Command="sh add_swift_libs.sh $(AppBundleDir) iPhoneSimulator" />
+  </Target>
+    
+</Project>
