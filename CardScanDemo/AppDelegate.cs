@@ -24,8 +24,7 @@ namespace CardScanDemo
             // If not required for your application you can safely delete this method
 
             AppCenter.Start("a65899f7-4288-4965-838b-ef745cd68d7f",
-                   typeof(Crashes));
-           
+                   typeof(Crashes));           
 
             return true;
         }
