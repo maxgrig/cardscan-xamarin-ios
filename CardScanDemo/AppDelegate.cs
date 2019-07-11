@@ -1,4 +1,6 @@
 ﻿using Foundation;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Crashes;
 using UIKit;
 
 namespace CardScanDemo
@@ -20,6 +22,10 @@ namespace CardScanDemo
         {
             // Override point for customization after application launch.
             // If not required for your application you can safely delete this method
+
+            AppCenter.Start("a65899f7-4288-4965-838b-ef745cd68d7f",
+                   typeof(Crashes));
+           
 
             return true;
         }

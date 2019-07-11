@@ -1,5 +1,6 @@
 ﻿using CardScanBinding;
 using Foundation;
+using Microsoft.AppCenter.Crashes;
 using System;
 using UIKit;
 
@@ -15,6 +16,8 @@ namespace CardScanDemo
         {
             base.ViewDidLoad();
 
+            Crashes.GenerateTestCrash();
+           
             btnScan.TouchUpInside += BtnScan_TouchUpInside;
         }
 
