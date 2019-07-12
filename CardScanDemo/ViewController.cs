@@ -29,13 +29,26 @@ namespace CardScanDemo
         public void UserDidScanCard(ScanViewController scanViewController, CreditCard creditCard)
         {
             var cardNumber = creditCard?.Number ?? "";
-            for (int i = 4; i < cardNumber.Length; i += 4)
+            if (cardNumber.Length == 16)
             {
-                cardNumber = cardNumber.Insert(i + i / 4 - 1, " ");
+                cardNumber = cardNumber.Insert(12, "  ").Insert(8, "  ").Insert(4, "  ");
+            }
+            else if (cardNumber.Length == 15 ||
+                     cardNumber.Length == 14)
+            {
+                cardNumber = cardNumber.Insert(10, "  ").Insert(4, "  ");
             }
 
             lblCardNumber.Text = cardNumber;
-            lblExpiryDate.Text = $"{creditCard?.ExpiryMonth}/{creditCard?.ExpiryYear}".Trim('/');
+
+            if (!string.IsNullOrEmpty(creditCard.ExpiryMonth) && !string.IsNullOrEmpty(creditCard.ExpiryYear))
+            {
+                lblExpiryDate.Text = $"{creditCard?.ExpiryMonth}/{creditCard?.ExpiryYear}".Trim('/');
+            }
+            else
+            {
+                lblExpiryDate.Text = "n/a";
+            }
 
             DismissViewController(true, null);
         }
